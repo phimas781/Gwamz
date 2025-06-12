@@ -112,26 +112,26 @@ if uploaded_file is not None:
 
     # Charts
     st.subheader("📊 Popularity Distribution")
-    plt.figure(figsize=(10, 4))
-    sns.histplot(df_filtered['Predicted_Popularity'], bins=15, kde=True, color='purple')
-    plt.title('Predicted Popularity Distribution')
-    st.pyplot(plt)
+    fig, ax = plt.subplots(figsize=(10, 4))
+    sns.histplot(df_filtered['Predicted_Popularity'], bins=15, kde=True, color='purple', ax=ax)
+    ax.set_title('Predicted Popularity Distribution')
+    st.pyplot(fig)
 
     st.subheader("🔮 Projected Popularity 2026")
-    plt.figure(figsize=(10, 4))
-    sns.histplot(df_filtered['Projected_Popularity_2026'], bins=15, kde=True, color='orange')
-    plt.title('Projected Popularity for 2026')
-    st.pyplot(plt)
+    fig, ax = plt.subplots(figsize=(10, 4))
+    sns.histplot(df_filtered['Projected_Popularity_2026'], bins=15, kde=True, color='orange', ax=ax)
+    ax.set_title('Projected Popularity for 2026')
+    st.pyplot(fig)
 
     st.subheader("📈 Growth Trend Indicator")
-    plt.figure(figsize=(10, 4))
-    sns.histplot(df_filtered['Growth_Trend'], bins=15, kde=True, color='green')
-    plt.title('Growth Trend of Tracks')
-    st.pyplot(plt)
+    fig, ax = plt.subplots(figsize=(10, 4))
+    sns.histplot(df_filtered['Growth_Trend'], bins=15, kde=True, color='green', ax=ax)
+    ax.set_title('Growth Trend of Tracks')
+    st.pyplot(fig)
 
 else:
     st.info("⬆️ Please upload a Spotify CSV to begin.")
 
 # Footer
 st.markdown("---")
-st.markdown("Madness Mixtape 2025.")
+st.markdown("Made with ❤️ by Your Data Science Pro System | Powered by Streamlit & Spotify API.")
