@@ -23,6 +23,9 @@ st.markdown("""
     .stSlider>div>div>div {
         background: linear-gradient(90deg, #1DB954, #1ed760);
     }
+    .reportview-container .main footer {
+        visibility: hidden;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -92,6 +95,20 @@ if uploaded_file is not None:
     st.subheader("🚀 Top 5 Future Hits Analysis")
     top5 = df_filtered.sort_values(by='Projected_Popularity_2026', ascending=False).head(5)
     st.write(top5[['track_name', 'Predicted_Popularity', 'Projected_Popularity_2026', 'Predicted_Class', 'Virality_Score', 'Longevity_Score', 'Growth_Trend']])
+
+    # Key Insights
+    st.markdown("""
+    **Insights:**
+    - 🎯 **Top Performer:** {} with a projected popularity of {:.2f}
+    - 🔥 **Most Viral Track:** {} with a virality score of {:.2f}
+    - 🕰️ **Longest Potential Lifespan:** {} with a longevity score of {:.2f}
+    """.format(
+        top5.iloc[0]['track_name'], top5.iloc[0]['Projected_Popularity_2026'],
+        top5.sort_values(by='Virality_Score', ascending=False).iloc[0]['track_name'],
+        top5.sort_values(by='Virality_Score', ascending=False).iloc[0]['Virality_Score'],
+        top5.sort_values(by='Longevity_Score', ascending=False).iloc[0]['track_name'],
+        top5.sort_values(by='Longevity_Score', ascending=False).iloc[0]['Longevity_Score']
+    ))
 
     # Charts
     st.subheader("📊 Popularity Distribution")
