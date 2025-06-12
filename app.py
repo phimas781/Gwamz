@@ -53,46 +53,52 @@ if uploaded_file is not None:
     # Additional Metrics
     df['Album_Age_Years'] = 2025 - df['release_year']
     df['Followers_Popularity_Ratio'] = df['artist_followers'] / (df['artist_popularity'] + 1)
-    df['Market_Reach_Score'] = df['available_markets_count'] / 180  # Assuming 180 total markets
+    df['Market_Reach_Score'] = df['available_markets_count'] / 180
     df['Disc_Track_Position_Score'] = df['track_number'] / (df['total_tracks_in_album'] + 1)
     df['Freshness_Score'] = 1 / (1 + df['Album_Age_Years'])
     df['Expected_Discoverability'] = df['Followers_Popularity_Ratio'] * df['Market_Reach_Score'] * df['Freshness_Score']
 
-    # Show Data
-    st.subheader("🔍 Data Preview with Predictions & Metrics")
-    st.dataframe(df)
-
-    # Sidebar filter by Release Year
-    min_year, max_year = int(df['release_year'].min()), int(df['release_year'].max())
-    release_year_range = st.sidebar.slider("Filter by Release Year", min_year, max_year, (min_year, max_year))
-    df_filtered = df[(df['release_year'] >= release_year_range[0]) & (df['release_year'] <= release_year_range[1])]
+    # Simulate Future Popularity Growth
+    df['Projected_Popularity_2026'] = df['Predicted_Popularity'] * np.random.uniform(1.02, 1.08, len(df))
+    df['Projected_Popularity_2027'] = df['Projected_Popularity_2026'] * np.random.uniform(1.01, 1.05, len(df))
+    df['Projected_Popularity_2028'] = df['Projected_Popularity_2027'] * np.random.uniform(0.98, 1.03, len(df))
+    df['Virality_Potential'] = np.clip(df['Expected_Discoverability'] * np.random.uniform(0.8, 1.2, len(df)), 0, 1)
+    df['Longevity_Score'] = np.clip(df['Freshness_Score'] * np.random.uniform(0.7, 1.3, len(df)), 0, 1)
 
     # Top 5 Future Hits
     st.subheader("🚀 Top 5 Future Hits (By Predicted Popularity)")
-    top5 = df_filtered.sort_values(by='Predicted_Popularity', ascending=False).head(5)
-    st.write(top5[['track_name', 'Predicted_Popularity', 'Predicted_Class']])
+    top5 = df.sort_values(by='Predicted_Popularity', ascending=False).head(5)
 
-    # Popularity Distribution Chart
-    st.subheader("📊 Predicted Popularity Distribution")
-    plt.figure(figsize=(10, 5))
-    sns.histplot(df_filtered['Predicted_Popularity'], bins=20, kde=True, color='purple')
-    plt.xlabel('Predicted Popularity Score')
-    plt.ylabel('Frequency')
-    plt.title('Distribution of Predicted Track Popularity')
-    st.pyplot(plt)
+    def determine_trend(row):
+        if row['Projected_Popularity_2028'] > row['Predicted_Popularity']:
+            return "Up 🔼"
+        elif row['Projected_Popularity_2028'] < row['Predicted_Popularity']:
+            return "Down 🔽"
+        else:
+            return "Stable ➖"
 
-    # Expected Discoverability Chart
-    st.subheader("🔮 Expected Discoverability Score Distribution")
-    plt.figure(figsize=(10, 5))
-    sns.histplot(df_filtered['Expected_Discoverability'], bins=20, kde=True, color='green')
-    plt.xlabel('Expected Discoverability Score')
-    plt.ylabel('Frequency')
-    plt.title('Distribution of Expected Discoverability')
+    top5['Growth_Trend'] = top5.apply(determine_trend, axis=1)
+
+    st.write(top5[['track_name', 'Predicted_Popularity', 'Predicted_Class',
+                   'Projected_Popularity_2026', 'Projected_Popularity_2027', 'Projected_Popularity_2028',
+                   'Expected_Discoverability', 'Virality_Potential', 'Longevity_Score', 'Growth_Trend']])
+
+    # Plot Future Growth
+    st.subheader("📈 Future Popularity Growth Trends (Top 5)")
+    plt.figure(figsize=(10, 6))
+    for i, row in top5.iterrows():
+        plt.plot([2025, 2026, 2027, 2028],
+                 [row['Predicted_Popularity'], row['Projected_Popularity_2026'],
+                  row['Projected_Popularity_2027'], row['Projected_Popularity_2028']],
+                 marker='o', label=row['track_name'])
+    plt.xlabel('Year')
+    plt.ylabel('Projected Popularity')
+    plt.title('Projected Popularity Trend for Top 5 Future Hits')
+    plt.legend()
     st.pyplot(plt)
 
 else:
     st.info("⬆️ Please upload a Spotify track CSV file to begin.")
 
-# Footer
 st.markdown("---")
 st.markdown("🔗 **Built by Your Data Science Pro System. Powered by Streamlit & Spotify API.**")
