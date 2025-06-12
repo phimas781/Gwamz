@@ -81,6 +81,8 @@ if uploaded_file is not None:
     df['Virality_Score'] = df['Market_Reach_Score'] * df['Followers_Popularity_Ratio'] * 100
     df['Longevity_Score'] = (1 / (1 + df['Album_Age_Years'])) * df['Predicted_Popularity']
     df['Growth_Trend'] = df['Projected_Popularity_2026'] - df['Predicted_Popularity']
+    df['Hit_Probability_Score'] = (df['Virality_Score'] + df['Longevity_Score'] + df['Growth_Trend']) / 3
+    df['Potential_Hit_Flag'] = df['Hit_Probability_Score'].apply(lambda x: 'Yes' if x > np.percentile(df['Hit_Probability_Score'], 75) else 'No')
 
     # Data Preview
     st.subheader("🔍 Data Preview with All Predictions & Metrics")
@@ -93,22 +95,26 @@ if uploaded_file is not None:
 
     # 🚀 Future Hits Analysis
     st.subheader("🚀 Top 5 Future Hits Analysis")
-    top5 = df_filtered.sort_values(by='Projected_Popularity_2026', ascending=False).head(5)
-    st.write(top5[['track_name', 'Predicted_Popularity', 'Projected_Popularity_2026', 'Predicted_Class', 'Virality_Score', 'Longevity_Score', 'Growth_Trend']])
+    top5 = df_filtered.sort_values(by='Hit_Probability_Score', ascending=False).head(5)
+    st.write(top5[['track_name', 'Predicted_Popularity', 'Projected_Popularity_2026', 'Predicted_Class', 'Virality_Score', 'Longevity_Score', 'Growth_Trend', 'Hit_Probability_Score', 'Potential_Hit_Flag']])
 
     # Key Insights
-    st.markdown("""
-    **Insights:**
-    - 🎯 **Top Performer:** {} with a projected popularity of {:.2f}
-    - 🔥 **Most Viral Track:** {} with a virality score of {:.2f}
-    - 🕰️ **Longest Potential Lifespan:** {} with a longevity score of {:.2f}
-    """.format(
-        top5.iloc[0]['track_name'], top5.iloc[0]['Projected_Popularity_2026'],
-        top5.sort_values(by='Virality_Score', ascending=False).iloc[0]['track_name'],
-        top5.sort_values(by='Virality_Score', ascending=False).iloc[0]['Virality_Score'],
-        top5.sort_values(by='Longevity_Score', ascending=False).iloc[0]['track_name'],
-        top5.sort_values(by='Longevity_Score', ascending=False).iloc[0]['Longevity_Score']
-    ))
+    if not top5.empty:
+        st.markdown("""
+        **Insights:**
+        - 🎯 **Top Performer:** {} with a projected popularity of {:.2f}
+        - 🔥 **Most Viral Track:** {} with a virality score of {:.2f}
+        - 🕰️ **Longest Potential Lifespan:** {} with a longevity score of {:.2f}
+        - 🚀 **Highest Hit Probability:** {} flagged as '{}'
+        """.format(
+            top5.iloc[0]['track_name'], top5.iloc[0]['Projected_Popularity_2026'],
+            top5.sort_values(by='Virality_Score', ascending=False).iloc[0]['track_name'],
+            top5.sort_values(by='Virality_Score', ascending=False).iloc[0]['Virality_Score'],
+            top5.sort_values(by='Longevity_Score', ascending=False).iloc[0]['track_name'],
+            top5.sort_values(by='Longevity_Score', ascending=False).iloc[0]['Longevity_Score'],
+            top5.iloc[0]['track_name'],
+            top5.iloc[0]['Potential_Hit_Flag']
+        ))
 
     # Charts
     st.subheader("📊 Popularity Distribution")
@@ -129,9 +135,15 @@ if uploaded_file is not None:
     ax.set_title('Growth Trend of Tracks')
     st.pyplot(fig)
 
+    st.subheader("🚦 Hit Probability Score Distribution")
+    fig, ax = plt.subplots(figsize=(10, 4))
+    sns.histplot(df_filtered['Hit_Probability_Score'], bins=15, kde=True, color='red', ax=ax)
+    ax.set_title('Hit Probability Score Distribution')
+    st.pyplot(fig)
+
 else:
     st.info("⬆️ Please upload a Spotify CSV to begin.")
 
 # Footer
 st.markdown("---")
-st.markdown("Madness Mixtape 2025.")
+st.markdown("Mixtape Madness 2025.")
