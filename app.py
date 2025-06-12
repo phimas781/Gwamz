@@ -117,4 +117,4 @@ else:
 
 # Footer
 st.markdown("---")
-st.markdown("Mixtape Madness 2025.")
+st.markdown("Madness Mixtape 2025.")
