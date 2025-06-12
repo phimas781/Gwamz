@@ -32,7 +32,7 @@ st.markdown("""
 # Title & Description
 st.title("🎧 Spotify Track Popularity Predictor Dashboard")
 st.markdown("""
-Welcome to the **Spotify Song Future Popularity Predictor Pro Version** 🎶 
+Welcome to the **Gwamz Spotify Song Future Popularity Predictor** 🎶 
 
 Upload your Spotify track CSV file to see predictions, future hit potential, virality, longevity, and growth trends.
 """)
