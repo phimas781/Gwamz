@@ -117,4 +117,4 @@ else:
 
 # Footer
 st.markdown("---")
-st.markdown("Made with ❤️ by Your Data Science Pro System | Powered by Streamlit & Spotify API.")
+st.markdown("Mixtape Madness 2025.")
